@@ -1,0 +1,38 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+*,*:before,*:after{
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+html,.login-box{
+    font:14px/22px STHeiti,Helvetica Neue,Heiti SC,Microsoft YaHei,Arial,Helvetica,sans-serif
+}
+.login-box{
+    width: 400px;
+    padding: 10px 40px;
+    background: #f3f3f4;
+}
+.login-box h2{
+    font-size: 18px;
+    text-align: center;
+}
+.login-box p{
+    text-align: center;
+    font-size: 14px;
+}
+.form-input{
+    margin: 5px 0;
+    border:1px #ececec solid;
+    width: 100%;
+    padding: 8px;
+}
+.login-btn{
+    width: 100%;
+    margin: 5px 0;
+    color: #fff;
+    border:1px #1ab394 solid;
+    background: #1ab394;
+    padding: 8px;
+}

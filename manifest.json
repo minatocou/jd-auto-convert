@@ -3,18 +3,30 @@
   "name": "简历自动转换工具",
   "version": "1.0",
   "description": "跨平台简历自动转换",
+
   "browser_action": {
     "default_icon": "images/icon.png",
     "default_title": "简历转换工具",
     "default_popup": "popup.html"
   },
   "permissions": [
-    "http://sneezryworks.sinaapp.com/ip.php"
+    "*://www.liepin.com/",
+    "notifications",
+    "tabs",
+    "webNavigation"
+  ],
+  "background": {
+    "scripts": ["js/jquery.js","js/background.js"]
+  },
+  "web_accessible_resources": [
+    "images/*.png"
   ],
   "content_scripts": [
     {
       "matches": ["*://www.liepin.com/"],
-      "js": ["js/jdConvert.js"]
+      "css":["css/jdConvert.css"],
+      "js": ["js/jquery.js","js/content.js"]
     }
   ]
+
 }
