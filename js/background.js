@@ -39,9 +39,9 @@ function httpRequest(url, callback){
     xhr.send();
 }
 
-setInterval(function(){
-    chrome.browserAction.setBadgeText({text: '222'});
-    httpRequest('msg.json', function(status){
-        chrome.browserAction.setBadgeText({text: status});
-    });
-},1000);
+//setInterval(function(){
+//    chrome.browserAction.setBadgeText({text: '222'});
+//    httpRequest('msg.json', function(status){
+//        chrome.browserAction.setBadgeText({text: status});
+//    });
+//},1000);

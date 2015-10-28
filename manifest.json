@@ -23,7 +23,7 @@
   ],
   "content_scripts": [
     {
-      "matches": ["*://www.liepin.com/"],
+      "matches": ["*://h.liepin.com/resume/showresumedetail/*"],
       "css":["css/jdConvert.css"],
       "js": ["js/jquery.js","js/content.js"]
     }
