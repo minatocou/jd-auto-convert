@@ -4,45 +4,80 @@ $(function(){
         //chrome.tabs.create( { url:chrome.extension.getURL('./jd.html'), index:(S.tab.index+1), selected:false }, function(tab){
         //    setTimeout(function(){_send2Spliter(tab); },50 );
         //});
-        var base=$('.resume-basic');
-        var bInfo=$('.resume-basic-info');
-        var jd = {
-            jobText:base.find('p.text-center').text(),//在职情况
-            //基本资料
-            name: findTable(bInfo,0,0),//姓名
-            sex:findTable(bInfo,0,1),//性别
-            link:findTable(bInfo,1,0),//联系电话
-            age:findTable(bInfo,1,1), //年龄
-            email:findTable(bInfo,2,0),//邮箱
-            edu:findTable(bInfo,2,1), //学历
-            weixin:null,
-            hunyin:findTable(bInfo,3,1), //学历
-            jobYear:findTable(bInfo,4,0), //工作年限
-            city:findTable(bInfo,4,1), //所在城市
-            //职位概况
-            szhy:findText('所在行业：','td'),//所在行业
-            comName: findText('公司名称：','td'),//公司名称
-            post: findText('公司职位：','td'),//职位名称
-            pay: findText('目前薪资：','td'),//目前薪资
-            //职业发展意向
+        chrome.runtime.sendMessage({action: "hello"}, function(response) {
+            var base=$('.resume-basic');
+            var bInfo=$('.resume-basic-info');
+            var year=new Date().getFullYear();
+            var jd = {
+                code: $('.tab li:eq(0)').hasClass('active')?'中文简历':'英文简历',
+                refurl:location.href,
+                refid:$('[data-nick=res_id]').text(),
+                lastlogin: $('.resume-sub-info').text().match('最后登录：.*')[0].replace('最后登录：',''),
+                status:base.find('p.text-center').text(),//在职情况
+                //基本资料
+                baseinfo:{
+                    name: findTable(bInfo,0,0),//姓名
+                    gender:findTable(bInfo,0,1),//性别
+                    celphone:findTable(bInfo,1,0),//联系电话
+                    birthyear:year-findTable(bInfo,1,1), //年龄
+                    email:findTable(bInfo,2,0),//邮箱
+                    degree:findTable(bInfo,2,1), //学历
+                    weixin:null,
+                    wedlock:findTable(bInfo,3,1), //婚姻
+                    startwork:year-findTable(bInfo,4,0), //工作年限
+                    city:findTable(bInfo,4,1), //所在城市
+                    provice:findTable(bInfo,4,1),//市区
+                    avatar:base.find('.face img').attr('src'),//头像
+                    nationality:null,//国籍
+                    hukou:null,//户口
+                    considerVenture:null//考虑初创
+                },
+                current:{
+                    //职位概况
+                    currentfunction:findText('所在行业：','td'),//所在行业
+                    currentcompeny: findText('公司名称：','td'),//公司名称
+                    currentposition: findText('公司职位：','td'),//职位名称
+                    currentsalary: findText('目前薪资：','td')//目前薪资
+                },
+                career:{
+                    //职业发展意向
+                    expectindustry: findText('期望行业：','td'),//期望行业
+                    expectfunction: findText('期望职位：','td'),//期望职位
+                    expectcity: findText('期望地点：','td'),//期望地点
+                    expectsalary: findText('期望月薪：','td'),//期望月薪
+                    norec:findText('勿推荐企业：','td')//勿推荐企业
+                },
 
-            ei: findText('期望行业：','td'),//期望行业
-            ej: findText('期望职位：','td'),//期望职位
-            ec: findText('期望地点：','td'),//期望地点
-            ep: findText('期望月薪：','td'),//期望月薪
-            noCom:findText('勿推荐企业：','td'),//勿推荐企业
-            //工作经验
-            jobList:searchJob(), //工作经验
-            peroductList:searchProduct(),//项目经验
-            eduList:searchEdu() //教育经历
-        }
-        console.log(jd);
-        chrome.runtime.connect().postMessage(jd);
+                workexperience:searchJob(), //工作经验
+                projectexperience:searchProduct(),//项目经验
+                educationbackground:searchEdu(), //教育经历
+
+                language:searchLanguage(),
+                selfintrduction:$('.resume-comments tr:eq(0) td:eq(0)').text(),
+                attrachment:$('.resume-others tr:eq(0) td:eq(0)').text()
+
+            }
+            var out=JSON.stringify(jd);
+            console.log(out.replace(/(\\t|\\n|\\r| |null)/g,''));
+            //chrome.runtime.connect().postMessage(out);
+
+
+            var render=template.compile(response.html);
+            var html = render(jd);
+            var autoJd=$('#autoJd').length>0?$('#autoJd'):$('<div id="autoJd" />').appendTo('body');
+            console.log(jd)
+            autoJd.html(html);
+        });
+
+        //var port = chrome.runtime.connect({action: "hello"});
+        //port.onMessage.addListener(function(msg) {
+        //    console.log(msg);
+        //});
+
     })
     function findTable(ele,row,col){
         var reg=new RegExp(".*：","g");
         var val=$.trim(ele.find('tr:eq('+row+') td:eq('+col+')').text()).replace(reg,'');
-        console.log(val)
         return val;
     }
     function findText(text,dom,notReplace){
@@ -57,18 +92,16 @@ $(function(){
     function searchJob(){
         var jobs=[];
         var job={
-            workTime:null,//工作时间
-            comName:null,//公司名
-            duration:null,//工作时长
-            type:null,//公司行业
+            startmonth:null,//工作时间
+            startyear:null,
+            endmonth:null,
+            endyear:null,
+            companyname:null,//公司名
+            //duration:null,//工作时长
+            companyindustry:null,//公司行业
             info:null,//公司描述
-            jobTitle:null,//职位名
-            personNum:null,//下属人数
-            area:null,//所在地区
-            section:null,//所在部门
-            hobj:null,//汇报对象
-            jd:null,//工作职责
-            wp:null//工作业绩
+            position:null//职位
+
 
         };
         var work=$('#workexp_anchor');
@@ -76,30 +109,43 @@ $(function(){
         var indent=work.find('.resume-indent');
         indent.each(function(i){
             job={};
-            job.workTime=title.eq(i).find('.work-time').text();
+            var workTime=title.eq(i).find('.work-time').text().split('-');
+            job.startmonth=workTime[0].split('.')[1];
+            job.startyear=workTime[0].split('.')[0];
+            job.endmonth=workTime[1].split('.')[0];
+            job.endyear=workTime[1].split('.').length>1?workTime[1].split('.')[1]:'至今';
             job.comName=title.eq(i).find('.compony').text();
-            job.duration=title.eq(i).find('.compony > span').text();
-            job.type=indent.eq(i).find('table:first tr:eq(0) td:eq(0)').text();
-            job.info=indent.eq(i).find('table:first tr:eq(1) td:eq(0)').text();
-            job.jobTitle= indent.eq(i).find('.job-list-title strong').text();
-            var temp=indent.eq(i).find('.job-list tr:eq(1)').text().split('|');
-            for(var i=0;i<temp.length;i++){
-                if(temp[i].match('汇报对象：')){
-                    job.hobj=temp[i].replace('汇报对象：','')
+            //job.duration=title.eq(i).find('.compony > span').text();
+            job.companyindustry=$(this).find('table:first tr:eq(0) td:eq(0)').text();
+            job.info=$(this).find('table:first tr:eq(1) td:eq(0)').text();
+            job.position=[];
+
+            $(this).find('.job-list').each(function(i){
+                var position={};
+                var $this=$(this);
+                var time=$this.find('.job-list-title span').text();
+                position.startmonth=time.split('-')[0];
+                position.endmonth=time.split('-')[1];
+                position.jobTitle= $this.find('.job-list-title strong').text();
+                var temp=$this.find('.job-list tr:eq(1)').text().split('|');
+                for(var i=0;i<temp.length;i++){
+                    if(temp[i].match('汇报对象：')){
+                        position.report=temp[i].replace('汇报对象：','')
+                    }
+                    if(temp[i].match('下属人数：')){
+                        position.sub=temp[i].replace('下属人数：','')
+                    }
+                    if(temp[i].match('所在区域：')){
+                        position.location=temp[i].replace('所在地区：','')
+                    }
+                    if(temp[i].match('所在部门：')){
+                        position.department=temp[i].replace('所在部门：','')
+                    }
                 }
-                if(temp[i].match('下属人数：')){
-                    job.personNum=temp[i].replace('下属人数：','')
-                }
-                if(temp[i].match('所在区域：')){
-                    job.area=temp[i].replace('所在地区：','')
-                }
-                if(temp[i].match('所在部门：')){
-                    job.section=temp[i].replace('所在部门：','')
-                }
-            }
-            console.log(indent.eq(i).find(":contains('工作职责')").text());
-            job.jd= indent.eq(i).find(":contains('工作职责：'):last").next().text();
-            job.wp= indent.eq(i).find(":contains('工作业绩：'):last").next().text();
+                position.responsible= $this.find(":contains('工作职责：'):last").next().text();
+                position.performance= $this.find(":contains('工作业绩：'):last").next().text();
+                job.position.push(position);
+            });
             jobs.push(job);
         });
         return jobs;
@@ -107,21 +153,32 @@ $(function(){
     function searchProduct(){
         var ps=[];
         var p={
-            name:null,//项目名
-            time:null,//时间
-            com:null,//所在公司
-            info:null,//项目简介
-            pd:null//项目职责
+            projectname:null,//项目名
+            projectposition:null,//项目职务
+            startmonth:null,
+            startyear:null,
+            endmonth:null,
+            endyear:null,
+            company:null,//所在公司
+            projectdesc:null,//项目简介
+            responsible:null,//项目职责
+            performance:null//项目业绩
         }
         var $ps=$('.project-list');
         $ps.each(function(i){
             $ps={};
             var $this=$(this);
             p.name=$this.find('.project-list-title > strong').text();
-            p.time=$this.find('.project-list-title > span').text();
+            var time=$this.find('.project-list-title > span').text();
+            time.startyear=time.split('-')[0].split('.')[0];
+            time.startmonth=time.split('-')[0].split('.')[1];
+            time.endyear=time.split('-')[1].split('.')[0];
+            time.endmonth=time.split('-')[1].split('.').length>1?time.split('-')[1].split('.')[1]:'至今';
+            p.projectposition=findText('项目职务：',$this);
             p.com=findText('所在公司：',$this);
             p.info=findText('项目简介：',$this);
             p.info=findText('项目职责：',$this);
+            p.info=findText('项目业绩：',$this);
             ps.push(p);
         })
         return ps;
@@ -129,24 +186,39 @@ $(function(){
     function searchEdu(){
         var es=[];
         var e={
-            name:null,
-            time:null,
-            specialty:null,
-            education:null,
-            isUnify:null
+            university:null,
+            startmonth:null,
+            startyear:null,
+            endmonth:null,
+            endyear:null,
+            major:null,
+            degree:null,
+            istongzhao:null
         }
         var $es=$('.resume-education>table');
         $es.each(function(i){
             e = {};
             var $that=$(this);
-            e.name=$that.find('tr:eq(0) td:eq(0) strong').text();
-            e.time=$that.find('tr:eq(0) td:eq(0)').text();
+            e.university=$that.find('tr:eq(0) td:eq(0) strong').text();
+            var time=$that.find('tr:eq(0) td:eq(0)').text().match('\\（.*')[0].replace(/[（）]/g,'');
+            e.startyear=time.split('-')[0].split('.')[0];
+            e.startmonth=time.split('-')[0].split('.')[1];
+            e.endyear=time.split('-')[1].split('.')[0];
+            e.endmonth=time.split('-')[1].split('.')[1];
+
             e.specialty=findText('专业：',$that);
             e.education=findText('学历：',$that);
             e.isUnify=findText('是否统招：',$that);
             es.push(e);
         })
         return es;
+    }
+    function searchLanguage(){
+        var l=$('.resume-language tr:eq(0) td:eq(0)').text();
+        var language={
+            name:null
+        }
+        return l.split('、')
     }
 })
 

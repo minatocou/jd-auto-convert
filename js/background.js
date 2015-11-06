@@ -1,3 +1,4 @@
+var h='';
 chrome.runtime.onMessage.addListener(function(request, sender, sendRequest){
     console.log(request.action);
     if(request.action=="login"){
@@ -5,22 +6,22 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendRequest){
             console.log(status);
         });
     }
-
+    if(request.action=="hello"){
+        sendRequest({html: h});
+    }
 });
 
 chrome.runtime.onConnect.addListener(function(port) {
 
-    var tab = port.sender.tab;
-
     // This will get called by the content script we execute in
     // the tab as a result of the user pressing the browser action.
     port.onMessage.addListener(function(info) {
-        saveJd(tab.id, info);
+        if(info.action=='hello')
+            port.postMessage({html: h});
     });
 });
 
 function saveJd(tabid,info){
-    alert(info);
 }
 
 
@@ -45,3 +46,9 @@ function httpRequest(url, callback){
 //        chrome.browserAction.setBadgeText({text: status});
 //    });
 //},1000);
+
+$(function(){
+    $.get('template.html',function(data){
+        h=data;
+    })
+})

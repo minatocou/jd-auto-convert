@@ -25,7 +25,7 @@
     {
       "matches": ["*://h.liepin.com/resume/showresumedetail/*"],
       "css":["css/jdConvert.css"],
-      "js": ["js/jquery.js","js/content.js"]
+      "js": ["js/jquery.js","js/template.js","js/content.js"]
     }
   ]
 
