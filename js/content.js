@@ -18,13 +18,13 @@ $(function(){
                 baseinfo:{
                     name: findTable(bInfo,0,0),//姓名
                     gender:findTable(bInfo,0,1),//性别
-                    celphone:findTable(bInfo,1,0),//联系电话
+                    celphone:$('.telphone').length>0?'<img src='+$('.telphone').attr('src')+' />':findTable(bInfo,1,0),//联系电话
                     birthyear:year-findTable(bInfo,1,1), //年龄
-                    email:findTable(bInfo,2,0),//邮箱
+                    email:$('.email').length>0? '<img src='+$('.email').attr('src')+' />':findTable(bInfo,2,0),//邮箱
                     degree:findTable(bInfo,2,1), //学历
                     weixin:null,
                     wedlock:findTable(bInfo,3,1), //婚姻
-                    startwork:year-findTable(bInfo,4,0), //工作年限
+                    startwork:findTable(bInfo,4,0), //工作年限
                     city:findTable(bInfo,4,1), //所在城市
                     provice:findTable(bInfo,4,1),//市区
                     avatar:base.find('.face img').attr('src'),//头像
@@ -36,7 +36,7 @@ $(function(){
                     //职位概况
                     currentfunction:findText('所在行业：','td'),//所在行业
                     currentcompeny: findText('公司名称：','td'),//公司名称
-                    currentposition: findText('公司职位：','td'),//职位名称
+                    currentposition: findText('所任职位：','td'),//职位名称
                     currentsalary: findText('目前薪资：','td')//目前薪资
                 },
                 career:{
@@ -49,6 +49,7 @@ $(function(){
                 },
 
                 workexperience:searchJob(), //工作经验
+                workexperienceText:$('#workexp_anchor tr:eq(0) td:eq(0)').html(),
                 projectexperience:searchProduct(),//项目经验
                 educationbackground:searchEdu(), //教育经历
 
@@ -58,10 +59,17 @@ $(function(){
 
             }
             var out=JSON.stringify(jd);
-            console.log(out.replace(/(\\t|\\n|\\r| |null)/g,''));
+            console.log(out.replace(/(\\t|\\n|\\r|null)/g,''));
             //chrome.runtime.connect().postMessage(out);
 
-
+            template.config('escape',false);
+            template.helper('toStr',function(str){
+                return $('<div/>').html(str).text();
+            });
+            template.helper('isArray',function(str){
+                console.log($.isArray(str));
+                return $.isArray(str);
+            });
             var render=template.compile(response.html);
             var html = render(jd);
             var autoJd=$('#autoJd').length>0?$('#autoJd'):$('<div id="autoJd" />').appendTo('body');
@@ -112,8 +120,8 @@ $(function(){
             var workTime=title.eq(i).find('.work-time').text().split('-');
             job.startmonth=workTime[0].split('.')[1];
             job.startyear=workTime[0].split('.')[0];
-            job.endmonth=workTime[1].split('.')[0];
-            job.endyear=workTime[1].split('.').length>1?workTime[1].split('.')[1]:'至今';
+            job.endyear=workTime[1].split('.')[0];
+            job.endmonth=workTime[1].split('.').length>1?workTime[1].split('.')[1]:'至今';
             job.comName=title.eq(i).find('.compony').text();
             //job.duration=title.eq(i).find('.compony > span').text();
             job.companyindustry=$(this).find('table:first tr:eq(0) td:eq(0)').text();
@@ -200,11 +208,12 @@ $(function(){
             e = {};
             var $that=$(this);
             e.university=$that.find('tr:eq(0) td:eq(0) strong').text();
-            var time=$that.find('tr:eq(0) td:eq(0)').text().match('\\（.*')[0].replace(/[（）]/g,'');
+            var time=$that.find('tr:eq(0) td:eq(0)').text().match('\\（.*')? $that.find('tr:eq(0) td:eq(0)').text().match('\\（.*')[0].replace(/[（）]/g,''):'';
             e.startyear=time.split('-')[0].split('.')[0];
             e.startmonth=time.split('-')[0].split('.')[1];
-            e.endyear=time.split('-')[1].split('.')[0];
-            e.endmonth=time.split('-')[1].split('.')[1];
+            console.log(time.split('-')[1]);
+            e.endyear=time.split('-')[1]?time.split('-')[1].split('.')[0]:'至今';
+            e.endmonth=time.split('-')[1]?time.split('-')[1].split('.')[1]:'至今';
 
             e.specialty=findText('专业：',$that);
             e.education=findText('学历：',$that);

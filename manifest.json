@@ -9,6 +9,7 @@
     "default_title": "简历转换工具",
     "default_popup": "popup.html"
   },
+  "icons": { "128": "images/icon.png" },
   "permissions": [
     "*://www.liepin.com/",
     "notifications",

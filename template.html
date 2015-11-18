@@ -1,7 +1,88 @@
 <div class="pop-bg"></div>
 <div class="pop-box">
+    <i class="close">×</i>
     <div>
-        {{code}}<br>
-        最后登录时间{{lastlogin}}
+        <h2 class="top-h2">中文简历</h2>
+        <div class="cv-main fx">
+            <div class="user-avatar">
+                <img src="{{baseinfo.avatar}}" class="">
+            </div>
+
+            <div class="cv-box baseinfo">
+                <p><h2>{{baseinfo.name}}</h2></p>
+                <p>英文名：{{}}</p>
+                <p>手机：{{baseinfo.celphone}}</p>
+                <p>Email：{{baseinfo.email}}</p>
+                <p>工作年限：{{baseinfo.startwork}}</p>
+                <p>
+                    <span class="w50">性别：{{baseinfo.gender}}</span>
+                    婚姻状况：{{baseinfo.wedlock}}
+                </p>
+                <p>
+                    <span class="w50">生日：{{baseinfo.birthyear}}</span>
+                    目前地点：{{baseinfo.city}}{{baseinfo.provice}}
+                </p>
+                <p>目前公司：{{current.currentcompeny}}</p>
+                <p>目前岗位：{{current.currentposition}}</p>
+                <p>
+                    <span class="w50">目前年薪：{{current.currentsalary}}</span>
+                    期望年薪：
+                </p>
+                <p>
+                    <span class="w50">最高学历：{{baseinfo.degree}}</span>
+                    毕业学校：{{educationbackground ? educationbackground[0].university : ''}}
+                </p>
+                <p>
+                    猎聘ID：{{refid}}
+                </p>
+                <p>
+                    薪资结构：
+                </p>
+            </div>
+        </div>
+        <div class="cv-main">
+            <h2>工作经验</h2>
+            {{if workexperience && workexperience.length>0}}
+            {{each workexperience as w}}
+            <div class="cv-box fx">
+                <div class="box-time">
+                    {{w.startyear}}.{{w.startmonth}} - {{w.endyear}}.{{w.endmonth}}
+                    <div class="tag">{{w.endyear-w.startyear}}</div>
+                </div>
+                <div>
+                    <b>{{w.comName}}</b>
+
+                    {{w.companyindustry}}
+                    <p>
+                        {{w.info}}
+                    </p>
+                    {{each w.position as p}}
+                        <b>{{p.jobTitle}} <span class="n"></span></b>
+                        <div class="fx">
+                            <span>工作职责：</span>
+                            <span>{{p.responsible}}</span>
+                        </div>
+                        <div class="fx">
+                            <span>工作业绩：</span>
+                            <span>{{p.performance}}</span>
+                        </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/each}}
+            {{else}}
+                {{workexperienceText}}
+            {{/if}}
+        </div>
     </div>
+
 </div>
+
+<script>
+    $(function(){
+        $('.close').on('click',function(){
+            $('.pop-box').hide();
+            $('.pop-bg').hide();
+        })
+    })
+</script>
