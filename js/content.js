@@ -1,88 +1,109 @@
 $(function(){
+    var now=new Date();
+    var cvJson;
+    var port = chrome.runtime.connect({name: "con"});
     var pageBtn=$('<input type="button" class="page-btn" value="保存到Copetus" / >').appendTo('body')
     pageBtn.on('click',function(){
         //chrome.tabs.create( { url:chrome.extension.getURL('./jd.html'), index:(S.tab.index+1), selected:false }, function(tab){
         //    setTimeout(function(){_send2Spliter(tab); },50 );
         //});
-        chrome.runtime.sendMessage({action: "hello"}, function(response) {
-            var base=$('.resume-basic');
-            var bInfo=$('.resume-basic-info');
-            var year=new Date().getFullYear();
-            var jd = {
-                code: $('.tab li:eq(0)').hasClass('active')?'中文简历':'英文简历',
-                refurl:location.href,
-                refid:$('[data-nick=res_id]').text(),
-                lastlogin: $('.resume-sub-info').text().match('最后登录：.*')[0].replace('最后登录：',''),
-                status:base.find('p.text-center').text(),//在职情况
-                //基本资料
-                baseinfo:{
-                    name: findTable(bInfo,0,0),//姓名
-                    gender:findTable(bInfo,0,1),//性别
-                    celphone:$('.telphone').length>0?'<img src='+$('.telphone').attr('src')+' />':findTable(bInfo,1,0),//联系电话
-                    birthyear:year-findTable(bInfo,1,1), //年龄
-                    email:$('.email').length>0? '<img src='+$('.email').attr('src')+' />':findTable(bInfo,2,0),//邮箱
-                    degree:findTable(bInfo,2,1), //学历
-                    weixin:null,
-                    wedlock:findTable(bInfo,3,1), //婚姻
-                    startwork:findTable(bInfo,4,0), //工作年限
-                    city:findTable(bInfo,4,1), //所在城市
-                    provice:findTable(bInfo,4,1),//市区
-                    avatar:base.find('.face img').attr('src'),//头像
-                    nationality:null,//国籍
-                    hukou:null,//户口
-                    considerVenture:null//考虑初创
-                },
-                current:{
-                    //职位概况
-                    currentfunction:findText('所在行业：','td'),//所在行业
-                    currentcompeny: findText('公司名称：','td'),//公司名称
-                    currentposition: findText('所任职位：','td'),//职位名称
-                    currentsalary: findText('目前薪资：','td')//目前薪资
-                },
-                career:{
-                    //职业发展意向
-                    expectindustry: findText('期望行业：','td'),//期望行业
-                    expectfunction: findText('期望职位：','td'),//期望职位
-                    expectcity: findText('期望地点：','td'),//期望地点
-                    expectsalary: findText('期望月薪：','td'),//期望月薪
-                    norec:findText('勿推荐企业：','td')//勿推荐企业
-                },
-
-                workexperience:searchJob(), //工作经验
-                workexperienceText:$('#workexp_anchor tr:eq(0) td:eq(0)').html(),
-                projectexperience:searchProduct(),//项目经验
-                educationbackground:searchEdu(), //教育经历
-
-                language:searchLanguage(),
-                selfintrduction:$('.resume-comments tr:eq(0) td:eq(0)').text(),
-                attrachment:$('.resume-others tr:eq(0) td:eq(0)').text()
-
-            }
-            var out=JSON.stringify(jd);
-            console.log(out.replace(/(\\t|\\n|\\r|null)/g,''));
-            //chrome.runtime.connect().postMessage(out);
-
-            template.config('escape',false);
-            template.helper('toStr',function(str){
-                return $('<div/>').html(str).text();
-            });
-            template.helper('isArray',function(str){
-                console.log($.isArray(str));
-                return $.isArray(str);
-            });
-            var render=template.compile(response.html);
-            var html = render(jd);
-            var autoJd=$('#autoJd').length>0?$('#autoJd'):$('<div id="autoJd" />').appendTo('body');
-            console.log(jd)
-            autoJd.html(html);
-        });
-
+        port.postMessage({action: "getToken"});
         //var port = chrome.runtime.connect({action: "hello"});
         //port.onMessage.addListener(function(msg) {
         //    console.log(msg);
         //});
-
     })
+    port.onMessage.addListener(function(response) {
+        if(response.reaction=='saveCv'){
+            if(response.status=='success'){
+                alert('保存成功');
+            }else{
+                alert('保存失败')
+            }
+
+        }
+        if(response.reaction=='getToken'){
+            if(!response.userTonken){
+                alert('请登录');
+            }else{
+                chrome.runtime.sendMessage({action: "getCv"}, function(response) {
+                    var base=$('.resume-basic');
+                    var bInfo=$('.resume-basic-info');
+                    var year=new Date().getFullYear();
+                    var jd = {
+                        code: $('.tab li:eq(0)').hasClass('active')?'中文简历':'英文简历',
+                        refurl:location.href,
+                        refid:$('[data-nick=res_id]').text(),
+                        lastlogin: $('.resume-sub-info').text().match('最后登录：.*')[0].replace('最后登录：',''),
+                        status:base.find('p.text-center').text(),//在职情况
+                        //基本资料
+                        baseinfo:{
+                            name: findTable(bInfo,0,0),//姓名
+                            gender:findTable(bInfo,0,1),//性别
+                            celphone:$('.telphone').length>0?'<img src='+$('.telphone').attr('src')+' />':findTable(bInfo,1,0),//联系电话
+                            birthyear:year-findTable(bInfo,1,1), //年龄
+                            email:$('.email').length>0? '<img src='+$('.email').attr('src')+' />':findTable(bInfo,2,0),//邮箱
+                            degree:findTable(bInfo,2,1), //学历
+                            weixin:null,
+                            wedlock:findTable(bInfo,3,1), //婚姻
+                            startwork:findTable(bInfo,4,0), //工作年限
+                            city:findTable(bInfo,4,1), //所在城市
+                            provice:findTable(bInfo,4,1),//市区
+                            avatar:base.find('.face img').attr('src'),//头像
+                            nationality:null,//国籍
+                            hukou:null,//户口
+                            considerVenture:null//考虑初创
+                        },
+                        current:{
+                            //职位概况
+                            currentfunction:findText('所在行业：','td'),//所在行业
+                            currentcompeny: findText('公司名称：','td'),//公司名称
+                            currentposition: findText('所任职位：','td'),//职位名称
+                            currentsalary: findText('目前薪资：','td')//目前薪资
+                        },
+                        career:{
+                            //职业发展意向
+                            expectindustry: findText('期望行业：','td'),//期望行业
+                            expectfunction: findText('期望职位：','td'),//期望职位
+                            expectcity: findText('期望地点：','td'),//期望地点
+                            expectsalary: findText('期望月薪：','td'),//期望月薪
+                            norec:findText('勿推荐企业：','td')//勿推荐企业
+                        },
+
+                        workexperience:searchJob(), //工作经验
+                        workexperienceText:$('#workexp_anchor tr:eq(0) td:eq(0)').html(),
+                        projectexperience:searchProduct(),//项目经验
+                        educationbackground:searchEdu(), //教育经历
+
+                        language:searchLanguage(),
+                        selfintrduction:$('.resume-comments tr:eq(0) td:eq(0)').text(),
+                        attrachment:$('.resume-others tr:eq(0) td:eq(0)').text()
+
+                    }
+                    var out=JSON.stringify(jd);
+                    //chrome.runtime.connect().postMessage(out);
+
+                    template.config('escape',false);
+                    template.helper('toStr',function(str){
+                        return $('<div/>').html(str).text();
+                    });
+                    template.helper('isArray',function(str){
+                        console.log($.isArray(str));
+                        return $.isArray(str);
+                    });
+                    var render=template.compile(response.html);
+                    var html = render(jd);
+                    var autoJd=$('#autoJd').length>0?$('#autoJd'):$('<div id="autoJd" />').appendTo('body');
+                    autoJd.html(html);
+
+                    autoJd.on('click','#saveBtn',function(){
+
+                        port.postMessage({action: "saveCv",cv:out});
+                    })
+                });
+            }
+        }
+    });
     function findTable(ele,row,col){
         var reg=new RegExp(".*：","g");
         var val=$.trim(ele.find('tr:eq('+row+') td:eq('+col+')').text()).replace(reg,'');
@@ -96,6 +117,11 @@ $(function(){
             return notReplace? temp : temp.replace(text,'')
         }
 
+    }
+    function findTdByTh(text,dom,si){
+        console.log(dom.find(":contains("+text+"):last").siblings())
+        var temp=dom.find(":contains("+text+"):last").siblings().text();
+        return temp;
     }
     function searchJob(){
         var jobs=[];
@@ -122,6 +148,7 @@ $(function(){
             job.startyear=workTime[0].split('.')[0];
             job.endyear=workTime[1].split('.')[0];
             job.endmonth=workTime[1].split('.').length>1?workTime[1].split('.')[1]:'至今';
+            job.endyearNum=workTime[1].split('.').length>1?workTime[1].split('.')[0]:now.getFullYear();
             job.comName=title.eq(i).find('.compony').text();
             //job.duration=title.eq(i).find('.compony > span').text();
             job.companyindustry=$(this).find('table:first tr:eq(0) td:eq(0)').text();
@@ -174,20 +201,20 @@ $(function(){
         }
         var $ps=$('.project-list');
         $ps.each(function(i){
-            $ps={};
             var $this=$(this);
-            p.name=$this.find('.project-list-title > strong').text();
+            p.projectname=$this.find('.project-list-title > strong').text();
             var time=$this.find('.project-list-title > span').text();
-            time.startyear=time.split('-')[0].split('.')[0];
-            time.startmonth=time.split('-')[0].split('.')[1];
-            time.endyear=time.split('-')[1].split('.')[0];
-            time.endmonth=time.split('-')[1].split('.').length>1?time.split('-')[1].split('.')[1]:'至今';
+            p.startyear=time.split('-')[0].split('.')[0];
+            p.startmonth=time.split('-')[0].split('.')[1];
+            p.endyear=time.split('-')[1].split('.')[0];
+            p.endmonth=time.split('-')[1].split('.').length>1?time.split('-')[1].split('.')[1]:'至今';
             p.projectposition=findText('项目职务：',$this);
-            p.com=findText('所在公司：',$this);
-            p.info=findText('项目简介：',$this);
-            p.info=findText('项目职责：',$this);
-            p.info=findText('项目业绩：',$this);
+            p.company=findTdByTh('所在公司：',$this,'.td');
+            p.projectdesc=findTdByTh('项目简介：',$this,'.td');
+            p.responsible=findTdByTh('项目职责：',$this,'.td');
+            p.performance=findTdByTh('项目业绩：',$this,'.td');
             ps.push(p);
+            console.log(p)
         })
         return ps;
     }
@@ -211,7 +238,6 @@ $(function(){
             var time=$that.find('tr:eq(0) td:eq(0)').text().match('\\（.*')? $that.find('tr:eq(0) td:eq(0)').text().match('\\（.*')[0].replace(/[（）]/g,''):'';
             e.startyear=time.split('-')[0].split('.')[0];
             e.startmonth=time.split('-')[0].split('.')[1];
-            console.log(time.split('-')[1]);
             e.endyear=time.split('-')[1]?time.split('-')[1].split('.')[0]:'至今';
             e.endmonth=time.split('-')[1]?time.split('-')[1].split('.')[1]:'至今';
 

@@ -4,10 +4,14 @@
     <h2>欢迎使用Copetus管理系统</h2>
     <p>登陆系统查看工作内容</p>
     <form>
-        <input class="form-input login-email" type="email" required placeholder="请输入邮箱" />
-        <input class="form-input login-pwd" type="password" required placeholder="请输入密码" />
+        <input class="form-input login-email" id="userName" type="email" required placeholder="请输入邮箱" />
+        <input class="form-input login-pwd" id="passWord" type="password" required placeholder="请输入密码" />
         <input type="button" id="login-btn" class="login-btn" value="登录" />
     </form>
+</div>
+<div class="msg-box">
+    您已登录，欢迎来到copetus
+    <input type="button" id="login-out-btn" class="login-btn" value="退出登录" />
 </div>
 <script src="js/jquery.js"></script>
 <script src="js/popup.js"></script>

@@ -36,3 +36,10 @@ html,.login-box{
     background: #1ab394;
     padding: 8px;
 }
+.msg-box{
+    text-align: center;
+    font-size: 18px;
+    padding:40px;
+    display: none;
+    width: 400px;
+}

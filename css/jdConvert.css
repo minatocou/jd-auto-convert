@@ -8,7 +8,7 @@
     background: #1ab394;
     padding: 8px;
     position: fixed;
-    right: 50px;
+    right: 80px;
     top: 50px;
     z-index: 10000;
 }
@@ -58,17 +58,21 @@
     margin: 0 0 5px 0;
 }
 .cv-main{
-    padding: 30px;
+    padding: 30px 30px 0;
     background: #fff;
     min-width: 800px;
+    line-height: 24px;
+    font-size: 12px;
 }
 .cv-main h2{
-    padding:10px;
-    margin-bottom: 2px;
+    padding:10px 10px 0;
 }
 .fx{
     display: flex;
     -webkit-display: flex;
+}
+.flex-3{
+    flex:0 0 33.3%;
 }
 .user-avatar{
     display: inline-block;
@@ -81,7 +85,44 @@
 }
 .cv-box{
     min-width: 600px;
+    padding: 20px 30px;
+    border-bottom: 1px #ccc solid;
+}
 
+.box-time{
+    min-width: 140px;
+    padding-right:20px;
+    text-align: center;
+}
+.box-time .tag{
+    height: 30px;
+    line-height: 30px;
+    background: #e6e6e6;
+}
+.cv-box .text{
+
+}
+.cv-box .text > b{
+
+}
+.cv-box label{
+    min-width: 60px;
+    display: inline-block;
+}
+.cv-box .right-time{
+    float: right;
+}
+.jobTitle{
+    background: #e6e6e6;
+    display: block;
+    padding: 0 10px;
+    margin: 5px 0;
+}
+.job-p{
+    padding-left: 10px;
+}
+.job-p span{
+    min-width: 80px;
 }
 .baseinfo{
     display: inline-block;
@@ -98,4 +139,23 @@
 }
 .baseinfo p img{
     vertical-align: middle;
+}
+
+.save-box{
+    width: 80px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+    background: #1ab394;
+    z-index: 10000;
+}
+.save-btn{
+    width: 100%;
+    height: 50px;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    background: transparent;
+
 }

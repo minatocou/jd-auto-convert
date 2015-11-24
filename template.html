@@ -47,9 +47,9 @@
             <div class="cv-box fx">
                 <div class="box-time">
                     {{w.startyear}}.{{w.startmonth}} - {{w.endyear}}.{{w.endmonth}}
-                    <div class="tag">{{w.endyear-w.startyear}}</div>
+                    <div class="tag">{{w.endyearNum-w.startyear}}年</div>
                 </div>
-                <div>
+                <div class="text">
                     <b>{{w.comName}}</b>
 
                     {{w.companyindustry}}
@@ -57,14 +57,16 @@
                         {{w.info}}
                     </p>
                     {{each w.position as p}}
-                        <b>{{p.jobTitle}} <span class="n"></span></b>
-                        <div class="fx">
-                            <span>工作职责：</span>
-                            <span>{{p.responsible}}</span>
-                        </div>
-                        <div class="fx">
-                            <span>工作业绩：</span>
-                            <span>{{p.performance}}</span>
+                        <div class="job-p">
+                            <b class="jobTitle">{{p.jobTitle}} <span class="n"></span></b>
+                            <div class="fx">
+                                <span>工作职责：</span>
+                                <span>{{p.responsible}}</span>
+                            </div>
+                            <div class="fx">
+                                <span>工作业绩：</span>
+                                <span>{{p.performance}}</span>
+                            </div>
                         </div>
                     {{/each}}
                 </div>
@@ -74,10 +76,89 @@
                 {{workexperienceText}}
             {{/if}}
         </div>
+        <div class="cv-main">
+            <h2>项目经验</h2>
+            {{if projectexperience && projectexperience.length>0}}
+                {{each projectexperience as p}}
+                    <div class="cv-box ">
+                        <b>{{p.projectname}}
+                            <div class="right-time">
+                                {{p.startyear}}.{{p.startmonth}} - {{p.endyear}}.{{p.endmonth}}
+                            </div>
+                        </b>
+                        <div class="fx">
+                            <label>项目职务：</label>
+                            <div>{{p.projectposition}}</div>
+                        </div>
+                        <div class="fx">
+                            <label>所在公司：</label>
+                            <div>{{p.company}}</div>
+                        </div>
+                        <div class="fx">
+                            <label>项目简介：</label>
+                            <div>{{p.projectdesc}}</div>
+                        </div>
+                        <div class="fx">
+                            <label>项目职责：</label>
+                            <div>{{p.responsible}}</div>
+                        </div>
+                        <div class="fx">
+                            <label>项目业绩：</label>
+                            <div>{{p.performance}}</div>
+                        </div>
+                    </div>
+                {{/each}}
+            {{else}}
+
+            {{/if}}
+        </div>
+        <div class="cv-main">
+            <h2>教育经历</h2>
+            {{if educationbackground && educationbackground.length>0}}
+            {{each educationbackground as e}}
+            <div class="cv-box ">
+                <b>{{e.university}}({{e.startyear}}.{{e.startmonth}} - {{e.endyear}}.{{e.endmonth}})
+                </b>
+                <div class="fx">
+                    <div class="flex-3">专业：{{e.specialty}}</div>
+                    <div class="flex-3">学历：{{e.education}}</div>
+                    <div class="flex-3">是否统招：{{e.isUnify}}</div>
+                </div>
+            </div>
+            {{/each}}
+            {{else}}
+
+            {{/if}}
+        </div>
+        <div class="cv-main">
+            <h2>语言能力</h2>
+            <div class="cv-box ">
+                {{if language && language.length>0}}
+                {{each language as l}}
+
+                    {{l}}、
+
+                {{/each}}
+
+                {{else}}
+
+                {{/if}}
+            </div>
+        </div>
+        <div class="cv-main">
+            <h2>自我评价</h2>
+            <div class="cv-box ">
+                {{if selfintrduction}}
+                    {{selfintrduction}}
+                {{/if}}
+            </div>
+        </div>
     </div>
 
 </div>
-
+<div class="save-box">
+    <input class="save-btn" id="saveBtn" value="保存" type="button">
+</div>
 <script>
     $(function(){
         $('.close').on('click',function(){
